@@ -1,0 +1,19 @@
+CREATE PROCEDURE solution()
+BEGIN
+	/* Write your SQL here. Terminate each statement with a semicolon. */
+	select a.seat_no, a.status, min(a.person_id) as person_id
+	from
+	(select s.seat_no as seat_no, 
+	 case 
+	 	when r.request = 2 and s.person_id = r.person_id then r.request
+		when r.request = 2 and s.person_id != r.person_id then s.status
+		when r.request = 1 and s.status = 0 then r.request
+		else s.status end as status,
+	case when r.request in (1,2) and s.status = 0 then r.person_id
+	else s.person_id end as person_id
+	from seats s
+	left join requests r
+	on s.seat_no = r.seat_no) a
+	group by a.seat_no, a.status
+	order by a.seat_no asc ;
+END
